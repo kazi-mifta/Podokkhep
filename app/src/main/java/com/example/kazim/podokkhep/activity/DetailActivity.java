@@ -145,7 +145,6 @@ public class DetailActivity extends AppCompatActivity {
                                 progressBar.setVisibility(View.GONE);
                                 return false;
                             }
-
                             @Override
                             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                                 progressBar.setVisibility(View.GONE);
