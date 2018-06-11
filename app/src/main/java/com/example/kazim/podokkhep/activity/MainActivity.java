@@ -5,6 +5,10 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kazim.podokkhep.R;
@@ -25,9 +29,17 @@ public class MainActivity extends AppCompatActivity {
     private EmployeeAdapter adapter;
     private RecyclerView recyclerView;
 
+    private ProgressBar progressBar;
+    private Button reloadButton;
+    private TextView reloadTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
+
+        progressBar = findViewById(R.id.progress);
+        reloadButton = findViewById(R.id.btn_reload);
+        reloadTextView = findViewById(R.id.text_reload);
 
         /*Create handle for the RetrofitInstance interface*/
         GetEmployeeDataService service = RetrofitInstance.getRetrofitInstance().create(GetEmployeeDataService.class);
@@ -46,13 +58,29 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<EmployeeList> call, Response<EmployeeList> response) {
 
+                progressBar.setVisibility(View.INVISIBLE);
                 generateEmployeeList(response.body().getEmployeeArrayList());
 
             }
 
             @Override
             public void onFailure(Call<EmployeeList> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
+
+                progressBar.setVisibility(View.INVISIBLE);
+                reloadTextView.setVisibility(View.VISIBLE);
+                reloadButton.setVisibility(View.VISIBLE);
+
+                reloadButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        finish();
+                        overridePendingTransition(0, 0);
+                        startActivity(getIntent());
+                        overridePendingTransition(0, 0);
+
+                    }
+                });
 
             }
 
@@ -61,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
     /*Method to generate List of employees using RecyclerView with custom adapter*/
     private void generateEmployeeList(ArrayList<Employee> empDataList) {
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view_employee_list);
+        recyclerView = findViewById(R.id.recycler_view_employee_list);
 
         adapter = new EmployeeAdapter(empDataList);
 
